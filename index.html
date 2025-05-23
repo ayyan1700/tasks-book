@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+</head>
+<style>
+    :root {
+        --primary: #1F2937;
+        --secondery: #3B82F6;
+        --main: #EFF6FF;
+        --last: #F9FAFB;
+        --attract: #332d2d;
+    }
+    body {
+        background-color: var(--main);
+        width: 100%;
+        height: 100vh;
+        margin: 0%;
+        padding: 0%;
+    }
+    main {
+        width: auto;
+        height: 300px;
+        align-content: center;
+        text-align: center;
+        position: relative;
+    }
+    main>h1 {
+        font-size: 30px;
+        color: var(--primary);
+        font-weight: 600;
+    }
+    #Add {
+        width: 400px;
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 10px;
+    }
+    #AddTasks {
+        padding: 10px;
+        color: var(--last);
+        background-color: var(--primary);
+        border: none;
+        font-size: 18px;
+        border-radius: 8px;
+    }
+    #personal,
+    #others,
+    #favourite {
+        padding: 8px;
+        color: var(--last);
+        background-color: var(--primary);
+        border: none;
+        margin-right: 10px;
+        border-radius: 14px;
+    }
+    #back,
+    #seelist,
+    #change-tasks {
+        padding: 8px;
+        color: var(--last);
+        background-color: var(--primary);
+        border: none;
+        margin-right: 10px;
+        margin-top: 12px;
+        border-radius: 14px;
+    }
+    #tasks {
+        margin-top: 15px;
+        border-radius: 20px;
+        padding: 10px;
+    }
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(6px);
+        z-index: -1;
+        pointer-events: none;
+    }
+    .nav {
+        width: auto;
+        height: 50px;
+        box-shadow: 0px 1px 10px var(--primary);
+        padding: 8px;
+        align-content: center;
+    }
+    #favor,
+    #per,
+    #oth,
+    #backed {
+        padding: 8px;
+        color: var(--last);
+        background-color: var(--primary);
+        border: none;
+        margin-left: 12px;
+        border-radius: 14px;
+    }
+    .tasked {
+        width: 80%;
+        height: auto;
+        margin: auto;
+        padding: 10px;
+        border-radius: 10px;
+        box-shadow: 0px 1px 10px var(--primary);
+        margin-bottom: 12px;
+        margin-top: 12px;
+        position: relative;
+    }
+    #fonts {
+        position: absolute;
+        right: 2%;
+        top: 35%;
+    }
+</style>
+<body>
+    <main>
+        <h1>Tasks Book</h1>
+        <input id="Add" type="text" placeholder="Add-Tasks" />
+        <button id="AddTasks">Add-tasks</button>
+    </main>
+    <script>
+        var main = document.querySelector("main");
+        var overlay = document.createElement("div");
+        var input = document.getElementById("Add");
+        var box = document.createElement("div");
+        var taskStorage = {
+            favourite: [],
+            personal: [],
+            others: []
+        };
+        function showTasks(category) {
+            if (taskStorage[category].length === 0) {
+                alert(`No tasks found in ${category} section.`);
+                return;
+            }
+            const oldContainer = document.querySelector(`.task-container[data-category="${category}"]`);
+            if (oldContainer) {
+                alert(`No other tasks found in ${category} section.`);
+                oldContainer.remove();
+            }
+            const container = document.createElement("div");
+            container.classList.add("task-container");
+            container.dataset.category = category;
+            taskStorage[category].forEach((task, index) => {
+                let taskDiv = document.createElement("div");
+                taskDiv.classList.add("tasked");
+                taskDiv.innerHTML = `<h3>${category} Tasks:</h3>${task} <i class="fas fa-trash trash-icon" style="cursor:pointer; float:right;"></i>`;
+                taskDiv.dataset.index = index;
+               taskDiv.querySelector(".trash-icon").addEventListener("click", () => {
+                    taskStorage[category].splice(index, 1);
+                    taskDiv.remove();
+                });
+                container.appendChild(taskDiv);
+            });
+            document.body.appendChild(container);
+        }
+        document.getElementById("AddTasks").addEventListener("click", function () {
+            if (input.value === "") {
+                alert("first fill the tasks");
+                return;
+            }
+            main.style.zIndex = "-2";
+            overlay.classList.add("overlay");
+            document.body.appendChild(overlay);
+            box.classList.add("tasks-box");
+            content = `
+                  <h2>Add tasks in this option</h2>
+                  <button id="favourite">favourite-tasks</button><button id="personal">personal-tasks</button><button id="others">others-tasks</button>
+                  <textarea id="tasks" rows="17" cols="58"></textarea>
+                  <button id="back">Back-the-main-page</button>
+                  <button id="seelist">Tasks-List</button>
+                  <button id="change-tasks">change-tasks</button>
+                 `;
+            box.style.width = "470px";
+            box.style.height = "445px";
+            box.style.boxShadow = "0px 1px 10px var(--primary)";
+            box.style.background = " rgba(0, 0, 0, 0)";
+            box.style.borderRadius = "20px";
+            box.style.margin = "auto";
+            box.style.padding = "12px";
+            box.style.textAlign = "center";
+            box.style.zIndex = "2";
+            box.innerHTML = content;
+            document.body.appendChild(box);
+            var textarea = document.getElementById("tasks");
+            textarea.value = input.value;
+            textarea.style.pointerEvents = "none";
+            let buttonClick = 0;
+            document.getElementById("change-tasks").addEventListener("click", function () {
+                ++buttonClick
+                if (buttonClick == 1) {
+                    alert("if you not save the tasks in options and click change-tasks button your previous tasks not save");
+                    return;
+                }
+                box.remove();
+                overlay.remove();
+                main.style.zIndex = "2";
+            });
+            document.getElementById("back").addEventListener("click", function () {
+                box.remove();
+                overlay.remove();
+                main.style.zIndex = "2";
+            });
+            document.getElementById("favourite").addEventListener("click", function () {
+                if (textarea.value == "") {
+                    alert("tasks not found");
+                    return;
+                }
+                taskStorage.favourite.push(textarea.value);
+                textarea.value = "";
+                alert("tasks added in favourite section");
+
+            });
+            document.getElementById("personal").addEventListener("click", function () {
+                if (textarea.value == "") {
+                    alert("tasks not found");
+                    return;
+                }
+                taskStorage.personal.push(textarea.value);
+                textarea.value = "";
+                alert("tasks added in personal section");
+            });
+            document.getElementById("others").addEventListener("click", function () {
+                if (textarea.value == "") {
+                    alert("tasks not found");
+                    return;
+                }
+                taskStorage.others.push(textarea.value);
+                textarea.value = "";
+                alert("tasks added in others section");
+            });
+            var nav = document.createElement("div");
+            document.getElementById("seelist").addEventListener("click", function () {
+                if (textarea.value !== "") {
+                    alert("first save the tasks");
+                    return;
+                }
+                box.remove();
+                overlay.remove();
+                main.style.display = "none";
+                nav.classList.add("nav");
+                items = `
+                <button id="favor">favourite-tasks</button>
+                <button id="per">personal-tasks</button>
+                <button id="oth">others-tasks</button>
+                <button id="backed">Go to main page</button>
+                `;
+                nav.innerHTML = items;
+                document.body.appendChild(nav);
+                document.getElementById("favor").addEventListener("click", function () {
+                    showTasks("favourite");
+                });
+                document.getElementById("per").addEventListener("click", function () {
+                    showTasks("personal");
+                });
+                document.getElementById("oth").addEventListener("click", function () {
+                    showTasks("others");
+                });
+                document.getElementById("backed").addEventListener("click", function () {
+                    nav.remove();
+                    main.style.display = "block";
+                    main.style.zIndex = "2";
+                    let oldDiv = document.querySelector(".selectTasks");
+                    if (oldDiv) oldDiv.remove();
+                });
+            });
+            input.value = "";
+        });
+    </script>
+</body>
+</html>
